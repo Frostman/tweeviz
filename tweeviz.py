@@ -69,11 +69,11 @@ def stats_updater():
         time.sleep(1)
 
 def main():
-    # thread = threading.Thread(target=stats_updater)
-    # thread.daemon = True
-    # thread.start()
+    thread = threading.Thread(target=stats_updater)
+    thread.daemon = True
+    thread.start()
 
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8589)
 
 if __name__ == "__main__":
     main()
