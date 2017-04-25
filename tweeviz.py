@@ -9,11 +9,11 @@ import flask
 from snakebite import client
 
 
-hdfs_address = os.environ.get('TWEEVIZ_HDFS_ADDRESS', 'hdfs-namenode')
-hdfs_port = int(os.environ('TWEEVIZ_HDFS_ADDRESS', 8020))
-results_dir = os.environ.get('TWEEVIZ_HDFS_PATH', '/demo')
-min_popularity = int(os.environ.get('TWEEVIZ_MIN_POPULARITY', 1))
-top_list_len = int(os.environ.get('TWEEVIZ_TOP_LIST_SIZE', 5))
+hdfs_address = os.getenv('TWEEVIZ_HDFS_ADDRESS', 'hdfs-namenode')
+hdfs_port = int(os.getenv('TWEEVIZ_HDFS_PORT', 8020))
+results_dir = os.getenv('TWEEVIZ_HDFS_PATH', '/')
+min_popularity = int(os.getenv('TWEEVIZ_MIN_POPULARITY', 2))
+top_list_len = int(os.getenv('TWEEVIZ_TOP_LIST_SIZE', 0))
 
 
 hdfs = client.Client(hdfs_address, hdfs_port, use_trash=False)
@@ -47,6 +47,8 @@ def update_stats():
 
     stats['popularity'] = to_jqcloud_format(filter(lambda x: x[1] >= min_popularity, hashtags.items()))
     max_top = min(len(hashtags), top_list_len)
+    if not max_top:
+        return
     stats['top'] = to_jqcloud_format(sorted(hashtags.items(), key=lambda x: x[1], reverse=True)[:max_top])
 
 
