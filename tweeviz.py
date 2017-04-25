@@ -76,7 +76,7 @@ def stats_updater():
     while(True):
         try:
             update_stats()
-        except e:
+        except Exception:
             pass
         time.sleep(1)
 
