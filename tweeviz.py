@@ -16,15 +16,14 @@ min_popularity = int(os.getenv('TWEEVIZ_MIN_POPULARITY', 2))
 top_list_len = int(os.getenv('TWEEVIZ_TOP_LIST_SIZE', 0))
 
 
-hdfs = client.Client(hdfs_address, hdfs_port, use_trash=False)
-
-
 hashtags = {}
 stats = {'popularity': [], 'top': []}
 processed_results = set()
 
 
 def update_stats():
+    hdfs = client.Client(hdfs_address, hdfs_port, use_trash=False)
+
     parts = []
     for result in sorted([r['path'] for r in hdfs.ls([results_dir])]):
         if not hdfs.test(result + "/_SUCCESS", exists=True):
@@ -75,7 +74,10 @@ def get_stats():
 
 def stats_updater():
     while(True):
-        update_stats()
+        try:
+            update_stats()
+        except e:
+            pass
         time.sleep(1)
 
 
