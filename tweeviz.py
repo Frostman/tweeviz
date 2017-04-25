@@ -53,7 +53,7 @@ def update_stats():
 
 def to_jqcloud_format(keypairs):
     return [{
-        'text': kp[0] + " (%s)" % kp[1],
+        'text': kp[0],
         'weight': kp[1],
     } for kp in keypairs]
 
@@ -69,7 +69,9 @@ def index():
 
 @app.route('/stats')
 def get_stats():
-    return flask.jsonify(stats)
+    response = flask.jsonify(stats)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 def stats_updater():
