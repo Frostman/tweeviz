@@ -1,13 +1,22 @@
 #!/usr/bin/env python
 
-from snakebite import client
 import json
+import os
+import threading
+import time
 
-hdfs = client.Client("hdfs-namenode", 8020, use_trash=False)
+import flask
+from snakebite import client
 
-results_dir = '/'
-min_popularity = 2
-top_list_len = 5
+
+hdfs_address = os.environ.get('TWEEVIZ_HDFS_ADDRESS', 'hdfs-namenode')
+hdfs_port = int(os.environ('TWEEVIZ_HDFS_ADDRESS', 8020))
+results_dir = os.environ.get('TWEEVIZ_HDFS_PATH', '/demo')
+min_popularity = int(os.environ.get('TWEEVIZ_MIN_POPULARITY', 1))
+top_list_len = int(os.environ.get('TWEEVIZ_TOP_LIST_SIZE', 5))
+
+
+hdfs = client.Client(hdfs_address, hdfs_port, use_trash=False)
 
 
 hashtags = {}
@@ -48,25 +57,25 @@ def to_jqcloud_format(keypairs):
     } for kp in keypairs]
 
 
-import threading
-import flask
-import time
-
 app = flask.Flask(__name__)
+
 
 @app.route('/')
 @app.route('/index.html')
 def index():
     return flask.render_template('index.html')
 
+
 @app.route('/stats')
 def get_stats():
     return flask.jsonify(stats)
+
 
 def stats_updater():
     while(True):
         update_stats()
         time.sleep(1)
+
 
 def main():
     thread = threading.Thread(target=stats_updater)
@@ -74,6 +83,7 @@ def main():
     thread.start()
 
     app.run(host='0.0.0.0', port=8589)
+
 
 if __name__ == "__main__":
     main()
